@@ -12,5 +12,7 @@
 
     <Grid>
         <win2d:CanvasAnimatedControl x:Name="ctrl" CreateResources="create_resources"/>
+        
+        <TextBlock Text="" x:Name="result"/>
     </Grid>
 </Page>

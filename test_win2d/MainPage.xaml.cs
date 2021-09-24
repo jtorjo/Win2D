@@ -30,6 +30,8 @@ namespace test_win2d
     public sealed partial class MainPage : Page
     {
         private object lock_ = new object();
+        private int error_count = 0;
+        private int ellapsed_ms = 0;
         public MainPage()
         {
             this.InitializeComponent();
@@ -38,13 +40,14 @@ namespace test_win2d
         private void MainPage_OnLoaded(object sender, RoutedEventArgs e) {
         }
 
-        private void create_resources(CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        private async void create_resources(CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
-            Task.Run(load_bitmaps);
-            //Task.Run(load_bitmaps_sequencial);
+            await Task.Run(async() => await load_bitmaps());
+//            await Task.Run(async() => await load_bitmaps_sequencial());
+            result.Text = "" + ellapsed_ms + " - errors=" + error_count;
         }
 
-        private async void load_bitmaps_sequencial() {
+        private async Task load_bitmaps_sequencial() {
             var device = ctrl.Device;
             var file = ApplicationData.Current.LocalFolder.Path + "\\0b5f85674ef29e6d6acf5a51cae9a2de-354-637677695863517970-0-37566.cinematic-stream";
             var read = new read_video_jpeg_from_disk(file);
@@ -60,10 +63,10 @@ namespace test_win2d
             for (int i = 0; i < 250; ++i)
                 bmps.Add(await read.canvas_bmp_at_idx(i, device));
             Debug.WriteLine("loaded " + watch.ElapsedMilliseconds);
-            return;
+            ellapsed_ms = (int)watch.ElapsedMilliseconds;
         }
 
-        private async void load_bitmaps() {
+        private async Task load_bitmaps() {
             var device = ctrl.Device;
             var file = ApplicationData.Current.LocalFolder.Path + "\\0b5f85674ef29e6d6acf5a51cae9a2de-354-637677695863517970-0-37566.cinematic-stream";
             var read = new read_video_jpeg_from_disk(file);
@@ -74,7 +77,6 @@ namespace test_win2d
             for (int i = 0; i < 250; ++i)
                 await read.canvas_bmp_at_idx(i, device);
 
-            int error_count = 0;
             List<CanvasBitmap> bmps = new List<CanvasBitmap>();
             //for (int i = 0; i < 50; ++i)
               //  bmps.Add(await read.canvas_bmp_at_idx(i, device));
@@ -84,8 +86,11 @@ namespace test_win2d
             for (int i = 0; i < 250; ++i)
                 indexes.Add(i);
 
+            int concurrent = 0;
+            bool needs_wait = false;
+
             var watch = Stopwatch.StartNew();
-            var tasks = Enumerable.Range(0,5).Select(i => Task.Run(async () => { 
+            var tasks = Enumerable.Range(0,4).Select(i => Task.Run(async () => { 
                 while (true) {
                     int idx = -1;
                     lock(lock_) {
@@ -94,18 +99,39 @@ namespace test_win2d
                         idx = indexes[0];
                         indexes.RemoveAt(0);
                     }
+                    /* 
+                    while (true) {
+                        lock(lock_)
+                            if ( needs_wait) {
+                                if ( concurrent == 0) {
+                                    needs_wait = false;
+                                    break;
+                                }
+                            } else 
+                                break;
+                        await Task.Delay(1);
+                    }
+                    */
+
+                    lock(lock_) 
+                        ++concurrent;
                     var bmp = await read.canvas_bmp_at_idx(idx, device);
+                    lock(lock_) 
+                        --concurrent;
                     if ( bmp != null) {
                         bmps.Add(bmp);
                     } else {
-                        ++error_count;
-                        lock(lock_)
+                        lock(lock_) {
+                            ++error_count;
                             indexes.Add(idx);
+                            needs_wait = true;
+                        }
                     }
                 }
             })).ToArray();
             Task.WaitAll(tasks);
             Debug.WriteLine("loaded " + watch.ElapsedMilliseconds + " errors=" + error_count);
+            ellapsed_ms = (int)watch.ElapsedMilliseconds;
         }
     }
 }
