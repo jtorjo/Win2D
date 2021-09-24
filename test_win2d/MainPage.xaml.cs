@@ -29,6 +29,7 @@ namespace test_win2d
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private object lock_ = new object();
         public MainPage()
         {
             this.InitializeComponent();
@@ -39,8 +40,8 @@ namespace test_win2d
 
         private void create_resources(CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
-            //Task.Run(load_bitmaps);
-            Task.Run(load_bitmaps_sequencial);
+            Task.Run(load_bitmaps);
+            //Task.Run(load_bitmaps_sequencial);
         }
 
         private async void load_bitmaps_sequencial() {
@@ -67,28 +68,44 @@ namespace test_win2d
             var file = ApplicationData.Current.LocalFolder.Path + "\\0b5f85674ef29e6d6acf5a51cae9a2de-354-637677695863517970-0-37566.cinematic-stream";
             var read = new read_video_jpeg_from_disk(file);
 
+            // warmup
+            for (int i = 0; i < 250; ++i)
+                await read.canvas_bmp_at_idx(i, device);
+            for (int i = 0; i < 250; ++i)
+                await read.canvas_bmp_at_idx(i, device);
+
+            int error_count = 0;
             List<CanvasBitmap> bmps = new List<CanvasBitmap>();
             //for (int i = 0; i < 50; ++i)
               //  bmps.Add(await read.canvas_bmp_at_idx(i, device));
             //return;
 
-            var tasks = Enumerable.Range(0,50).Select(i => Task.Run(async () => { 
-                var i_copy = i;
-                CanvasBitmap bmp = null;
-                for (int j = 0; j < 10 && bmp == null; j++) {
-                    bmp = await read.canvas_bmp_at_idx(i_copy, device);
-                    if ( bmp == null) {
-                        Debug.WriteLine("error " + j + " for item " + i);
-                        await Task.Delay(10);
+            List<int> indexes = new List<int>();
+            for (int i = 0; i < 250; ++i)
+                indexes.Add(i);
+
+            var watch = Stopwatch.StartNew();
+            var tasks = Enumerable.Range(0,5).Select(i => Task.Run(async () => { 
+                while (true) {
+                    int idx = -1;
+                    lock(lock_) {
+                        if (indexes.Count < 1)
+                            break;
+                        idx = indexes[0];
+                        indexes.RemoveAt(0);
+                    }
+                    var bmp = await read.canvas_bmp_at_idx(idx, device);
+                    if ( bmp != null) {
+                        bmps.Add(bmp);
+                    } else {
+                        ++error_count;
+                        lock(lock_)
+                            indexes.Add(idx);
                     }
                 }
-                if ( bmp != null)
-                    bmps.Add(bmp);
-                Debug.WriteLine("i=" + i_copy  + " "+ (bmp != null ? "ok" : "FAILED"));
             })).ToArray();
             Task.WaitAll(tasks);
-            
-            Debug.WriteLine("loaded " + bmps.Count);
+            Debug.WriteLine("loaded " + watch.ElapsedMilliseconds + " errors=" + error_count);
         }
     }
 }
