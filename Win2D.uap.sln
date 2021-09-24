@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29020.237
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "winrt", "winrt", "{0F212400-0A8B-4E26-9BA8-CE7165FF8717}"
 EndProject
@@ -61,6 +61,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winrt.test.managed.uap", "winrt\test.managed\winrt.test.managed.uap.csproj", "{70FB7B71-D56C-4BF1-9282-27AA58043CC0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winrt.test.external.uap", "winrt\test.external\winrt.test.external.uap.vcxproj", "{F33C7CB9-5ECA-47B7-9393-81E6E8F0BD34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test_win2d", "test_win2d\test_win2d.csproj", "{D0D75047-06E3-4938-8747-F019C6E8DDD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -326,6 +328,30 @@ Global
 		{F33C7CB9-5ECA-47B7-9393-81E6E8F0BD34}.Release|x64.ActiveCfg = Release|x64
 		{F33C7CB9-5ECA-47B7-9393-81E6E8F0BD34}.Release|x64.Build.0 = Release|x64
 		{F33C7CB9-5ECA-47B7-9393-81E6E8F0BD34}.Release|x64.Deploy.0 = Release|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM.ActiveCfg = Debug|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM.Build.0 = Debug|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM.Deploy.0 = Debug|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM64.Build.0 = Debug|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|Win32.ActiveCfg = Debug|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|Win32.Build.0 = Debug|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|Win32.Deploy.0 = Debug|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|x64.ActiveCfg = Debug|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|x64.Build.0 = Debug|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Debug|x64.Deploy.0 = Debug|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM.ActiveCfg = Release|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM.Build.0 = Release|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM.Deploy.0 = Release|ARM
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM64.ActiveCfg = Release|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM64.Build.0 = Release|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|ARM64.Deploy.0 = Release|ARM64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|Win32.ActiveCfg = Release|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|Win32.Build.0 = Release|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|Win32.Deploy.0 = Release|x86
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|x64.ActiveCfg = Release|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|x64.Build.0 = Release|x64
+		{D0D75047-06E3-4938-8747-F019C6E8DDD7}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
