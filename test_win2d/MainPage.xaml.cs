@@ -39,7 +39,27 @@ namespace test_win2d
 
         private void create_resources(CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
-            Task.Run(load_bitmaps);
+            //Task.Run(load_bitmaps);
+            Task.Run(load_bitmaps_sequencial);
+        }
+
+        private async void load_bitmaps_sequencial() {
+            var device = ctrl.Device;
+            var file = ApplicationData.Current.LocalFolder.Path + "\\0b5f85674ef29e6d6acf5a51cae9a2de-354-637677695863517970-0-37566.cinematic-stream";
+            var read = new read_video_jpeg_from_disk(file);
+
+            List<CanvasBitmap> bmps = new List<CanvasBitmap>();
+            // warmup
+            for (int i = 0; i < 250; ++i)
+                await read.canvas_bmp_at_idx(i, device);
+            for (int i = 0; i < 250; ++i)
+                await read.canvas_bmp_at_idx(i, device);
+
+            var watch = Stopwatch.StartNew();
+            for (int i = 0; i < 250; ++i)
+                bmps.Add(await read.canvas_bmp_at_idx(i, device));
+            Debug.WriteLine("loaded " + watch.ElapsedMilliseconds);
+            return;
         }
 
         private async void load_bitmaps() {
