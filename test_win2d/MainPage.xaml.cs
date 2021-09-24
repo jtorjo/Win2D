@@ -48,14 +48,27 @@ namespace test_win2d
             var read = new read_video_jpeg_from_disk(file);
 
             List<CanvasBitmap> bmps = new List<CanvasBitmap>();
+            //for (int i = 0; i < 50; ++i)
+              //  bmps.Add(await read.canvas_bmp_at_idx(i, device));
+            //return;
+
             var tasks = Enumerable.Range(0,50).Select(i => Task.Run(async () => { 
                 var i_copy = i;
-                Debug.WriteLine("i=" + i_copy);
-                var bmp = await read.canvas_bmp_at_idx(i_copy, device);
-                bmps.Add(bmp);
+                CanvasBitmap bmp = null;
+                for (int j = 0; j < 10 && bmp == null; j++) {
+                    bmp = await read.canvas_bmp_at_idx(i_copy, device);
+                    if ( bmp == null) {
+                        Debug.WriteLine("error " + j + " for item " + i);
+                        await Task.Delay(10);
+                    }
+                }
+                if ( bmp != null)
+                    bmps.Add(bmp);
+                Debug.WriteLine("i=" + i_copy  + " "+ (bmp != null ? "ok" : "FAILED"));
             })).ToArray();
             Task.WaitAll(tasks);
             
+            Debug.WriteLine("loaded " + bmps.Count);
         }
     }
 }
